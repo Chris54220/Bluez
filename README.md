@@ -36,3 +36,46 @@ Balise					https://www.amazon.fr/gp/product/B01AUNMQMG/ref=oh_aui_detailpage_o00
 # Instructions d'installation
 
 Le script est hébergé ici	https://github.com/Chris54220/Bluez/tree/master/Presence-detection-beacon
+
+# Bluez - la pile bluetooth linux
+
+Commencez par installer les dépendances utilisées par la bibliothèque bluez.
+
+	sudo apt-get update
+	sudo apt-get install -y libusb-dev libdbus-1-dev libglib2.0-dev libudev-dev libical-dev libreadline-dev
+
+- Install Bluez
+
+	git clone https://github.com/Chris54220/Bluez.git /home/pi/bluez
+	cd bluez
+	sudo ./configure --disable-systemd
+	sudo make
+	sudo make install
+	sudo apt-get install python-bluez python-requests
+	sudo cp attrib/gatttool /usr/local/bin/
+	sudo chmod +x /usr/local/bin/gatttool
+	sudo shutdown -r now
+	
+# Verif
+	
+Pour vous assurer que l'appareil USB Bluetooth est visible,
+
+	lsusb 
+	
+Avec l'adaptateur enfichable montré ci-dessus, le résultat ressemblera à ceci:
+
+	Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+	Bus 001 Device 002: ID 0424:9514 Standard Microsystems Corp.
+	Bus 001 Device 003: ID 0424:ec00 Standard Microsystems Corp. SMSC9512/9514 Fast Ethernet Adapter
+	Bus 001 Device 004: ID 0658:0200 Sigma Designs, Inc.
+	Bus 001 Device 005: ID 0403:6001 Future Technology Devices International, Ltd FT232 USB-Serial (UART) IC
+	Bus 001 Device 006: ID 0463:ffff MGE UPS Systems UPS
+	Bus 001 Device 007: ID 174c:5136 ASMedia Technology Inc.
+	# Bus 001 Device 008: ID 0a12:0001 Cambridge Silicon Radio, Ltd Bluetooth Dongle (HCI mode)
+	
+Pour moi, l'adaptateur est celui sur le bus 001 Device 008, près de ma carte audio, RFXCOM, carte relais USB ... Pour afficher plus d'informations à ce sujet, faites:
+	
+	sudo lsusb -v -d 0a12:
+	
+Si cela fonctionne, exécutez l'outil hciconfig:
+
