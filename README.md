@@ -9,7 +9,7 @@ Vérifiez la présence d'une liste de balises (BlueTooth Low Energy V4.0) et act
 Nécessaire dans Domoticz, un uservariable de type Chaine pour chaque balise BlueTooth
 	
 <img src="https://drive.google.com/uc?id=0BwsyidAGqsS_cHVIQVVlV1dVNDQ"/>
-g
+
 Le script fonctionne en 2 mode. Choisissez pour chaque balise celle que vous voulez:
 
 - MODE REPEAT: Pour la balise dans la portée, mettez à jour l'uservariable toutes les 3 secondes avec le RSSI (signal de force) & "AWAY" autrement
@@ -20,7 +20,7 @@ La détection est très rapide: environ 4 secondes. Et l'absence est vérifiée 
 
 
 # Pourquoi
-g
+
 Vous pouvez utiliser ceci pour voir si une personne (qui porte toujours son / sa balise) est à la maison ou non, et déclenchez des événements basés sur ceci.
 
 J'ai l'intention d'équiper toutes les clés de la famille avec la balise et automatiquement armer / désarmer mon système d'alarme Domoticz en vérifiant la présence d'une balise.
@@ -71,7 +71,7 @@ Avec l'adaptateur enfichable montré ci-dessus, le résultat ressemblera à ceci
 	Bus 001 Device 005: ID 0403:6001 Future Technology Devices International, Ltd FT232 USB-Serial (UART) IC
 	Bus 001 Device 006: ID 0463:ffff MGE UPS Systems UPS
 	Bus 001 Device 007: ID 174c:5136 ASMedia Technology Inc.
-	# Bus 001 Device 008: ID 0a12:0001 Cambridge Silicon Radio, Ltd Bluetooth Dongle (HCI mode)
+	Bus 001 Device 008: ID 0a12:0001 Cambridge Silicon Radio, Ltd Bluetooth Dongle (HCI mode)
 	
 Pour moi, l'adaptateur est celui sur le bus 001 Device 008, près de ma carte audio, RFXCOM, carte relais USB ... Pour afficher plus d'informations à ce sujet, faites:
 	

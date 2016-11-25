@@ -1,7 +1,11 @@
+
+
 #!/usr/bin/python
 #   File : test_beacon.py
-#   Auteur: Christopher JOLLY
-#   Date: 23-Nov-2016
+#   Author: jmleglise
+#   Date: 25-May-2016
+#   Description : Test yours beacon 
+#   URL : https://github.com/jmleglise/mylittle-domoticz/edit/master/Presence%20detection%20%28beacon%29/test_beacon.py
 #   Version : 1.0
 #
 
@@ -11,14 +15,14 @@ TAG_DATA = [
            
 import logging
 
-### choose between DEBUG (log toutes les informations) ou CRITICAL (seulement erreur)
+# choose between DEBUG (log every information) or CRITICAL (only error)
 logLevel=logging.DEBUG
 #logLevel=logging.CRITICAL
 
-#logOutFilename='/var/log/test_beacon.log'       # LOG : File ou console (Commenter cette ligne sur la sortie de la console)
+#logOutFilename='/var/log/test_beacon.log'       # output LOG : File or console (comment this line to console output)
 
 
-################ Rien à éditer sous cette ligne #####################################################################################
+################ Nothing to edit under this line #####################################################################################
 
 import os
 import subprocess
@@ -70,11 +74,11 @@ else:
 os.system("sudo hciconfig hci0 down")
 os.system("sudo hciconfig hci0 up")
 
-#Assurez-vous que l'appareil est en place
+#Make sure device is up
 interface = subprocess.Popen(["sudo hciconfig"], stdout=subprocess.PIPE, shell=True)
 (output, err) = interface.communicate()
 
-if "RUNNING" in output: #Vérifiez le retour de hciconfig pour vous assurer que c'est bien
+if "RUNNING" in output: #Check return of hciconfig to make sure it's up
     logging.debug('Ok hci0 interface Up n running !')
 else:
     logging.critical('Error : hci0 interface not Running. Do you have a BLE device connected to hci0 ? Check with hciconfig !')

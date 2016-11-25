@@ -1,63 +1,72 @@
 #!/usr/bin/python
 #   File : check_beacon_presence.py
-#   Auteur: Christopher JOLLY
-#   Date: 23-Nov-2016
-#   Description : Vérifiez la présence d'une liste de balises (BlueTooth Low Energy V4.0) et mettez à jour les uservariables dans Domoticz en conséquence.
-#   Version : 1.6
+#   Author: jmleglise
+#   Date: 10-Nov-2016
+#   Description : Check the presence of a list of beacon (BlueTooth Low Energy V4.0) and update uservariables in Domoticz accordingly. 
+#   URL : https://github.com/jmleglise/mylittle-domoticz/edit/master/Presence%20detection%20%28beacon%29/check_beacon_presence.py
+#   Version : 1.0
+#   Version : 1.1   Log + Mac Adress case insensitive 
+#   Version : 1.2   Fix initial AWAY state
+#   Version : 1.3   Log + script takes care of hciconfig + Return the RSSI when detected and "AWAY" otherwise
+#   Version : 1.4   Fix initial HOME state
+#   Version : 1.5   Split loglevel warning / debug
+#   Version : 1.6   Add le_handle_connection_complete +  Manage Domoticz login
 #
-# Fonctionnalité : 
-# Script s'occupe de l'adaptateur Bluetooth. Mettez-le en marche.
-# Lorsque L'ADRESSE MAC d'une liste de balises est détectée, mettre à jour DOMOTICZ uservariable.
-# Le script fonctionne maintenant en 2 mode. Choisissez pour chaque balise que vous voulez :
-#       REPEAT MODE : Pour la balise dans la portée, Mettez à jour l'uservariable toutes les 3 secondes avec le RSSI & "AWAY" autrement.
-#       SWITCH_MODE : Pour la balise dans la portée, Mettez à jour seulement une fois l'uservariable avec "HOME" & "AWAY" autrement.
-# Envoyer "AWAY" lorsque les balises ne sont pas dans la plage.
-# La détection est très rapide: environ 4 secondes. Et l'absence est vérifiée toutes les 5 secondes en comparant l'heure de la dernière présence avec un temps mort pour chaque balise.
+# Feature : 
+# Script takes care of Bluetooth Adapter. Switch it UP RUNNING.
+# When the MACADRESS of a list of beacons are detected, update DOMOTICZ uservariable.
+# Script operates now in 2 mode. Choose for each beacon witch one you want :
+#       REPEAT MODE : For beacon in range, update the uservariable every 3 secondes with the RSSI. And "AWAY" otherwise.
+#       SWITCH_MODE : For beacon in range, update only 1 time the uservariable with "HOME". And "AWAY" otherwise.
+# Send "AWAY" when the beacons are not in range.
+# The detection is very fast : around 4 secondes. And the absence is verified every 5 seconds by comparing the hour of the last presence with a time out for each beacon.
 #
+# References :
+# https://www.domoticz.com/wiki/Presence_detection_%28Bluetooth_4.0_Low_energy_Beacon%29
+# http://https://www.domoticz.com/forum/viewtopic.php?f=28&t=10640
+# https://wiki.tizen.org/wiki/Bluetooth
+# https://storage.googleapis.com/google-code-archive-source/v2/code.google.com/pybluez/source-archive.zip  => pybluez\examples\advanced\inquiry-with-rssi.py
 #
-# Obligatoire dans Domoticz: Un uservariable de type Chaîne pour chaque balise BLE
+# Required in Domoticz : An uservariable of type String for each BLE Tag
 #
-# Commande utile
+# Usefull command
 # sudo /etc/init.d/check_beacon_presence [stop|start|restart|status] 
 # 
 # Configuration :
-# Changez votre adresse IP et votre port ici :  
+# Change your IP and Port here :  
 URL_DOMOTICZ = 'http://192.168.0.5:8080/json.htm?type=command&param=updateuservariable&idx=PARAM_IDX&vname=PARAM_NAME&vtype=2&vvalue=PARAM_CMD'
 DOMOTICZ_USER='Bluez'
 DOMOTICZ_PASS='8891'
-						
+
 REPEAT_MODE=1
 SWITCH_MODE=0
 
 #
-# Configurez vos balises dans la table TAG_DATA avec: [Name,MacAddress,Timeout,0,idx,mode]
-# Name : le nom de l'uservariable utilisé dans Domoticz
-# macAddress : Adresse MAC
-# Timeout est en secondes le temps écoulé sans une détection pour la commutation de la balise AWAY. C'est-à-dire: si votre balise émet tous les 3 à 8 seondes, un délai de 15 secondes semble bon.
-# 0 : Utilisé par le script (Gardera l'heure de la dernière diffusion) 
-# Idx de l'uservariable à Domoticz pour cette balise
-# mode :
-#		SWITCH_MODE = Une mise à jour par changement d'état 
-#		REPEAT_MODE = Mise à jour continue du RSSI toutes les 3 secondes
+# Configure your Beacons in the TAG_DATA table with : [Name,MacAddress,Timeout,0,idx,mode]
+# Name : the name of the uservariable used in Domoticz
+# macAddress : case insensitive
+# Timeout is in secondes the elapsed time  without a detetion for switching the beacon AWAY. Ie :if your beacon emits every 3 to 8 seondes, a timeout of 15 secondes seems good.
+# 0 : used by the script (will keep the time of the last broadcast) 
+# idx of the uservariable in Domoticz for this beacon
+# mode : SWITCH_MODE = One update per status change / REPEAT_MODE = continuous updating the RSSI every 3 secondes
 
 TAG_DATA = [
-            ["Tag_Bleu","5E:FF:56:A2:AF:15",15,0,15,REPEAT_MODE],
-            ["Tag_Rouge","5E:FF:56:A2:AF:15",15,0,16,REPEAT_MODE],
-			["Tag_Jaune","5E:FF:56:A2:AF:15",15,0,17,REPEAT_MODE]
+            ["Tag_Chris","c3:41:97:bc:cb:d1",30,0,13,REPEAT_MODE],
+            ["Tag_Julie","e7:76:9d:9b:32:00",30,0,14,REPEAT_MODE]
            ]
 
            
 import logging
 
-### choose between DEBUG (log toutes les informations) ou WARNING (Changement d'état) ou CRITICAL (seulement erreur)
+# choose between DEBUG (log every information) or warning (change of state) or CRITICAL (only error)
 logLevel=logging.DEBUG
 #logLevel=logging.CRITICAL
 #logLevel=logging.WARNING
 
-logOutFilename='/var/log/check_beacon_presence.log'  # LOG : File ou console (Commenter cette ligne sur la sortie de la console)
-ABSENCE_FREQUENCY=5 								 # Fréquence du test d'absence. En seconde (Sans détection, commuter "AWAY".
+logOutFilename='/var/log/check_beacon_presence.log'       # output LOG : File or console (comment this line to console output)
+ABSENCE_FREQUENCY=5  # frequency of the test of absence. in seconde. (without detection, switch "AWAY".
 
-################ Rien à éditer sous cette ligne #####################################################################################
+################ Nothing to edit under this line #####################################################################################
 
 import os
 import subprocess
