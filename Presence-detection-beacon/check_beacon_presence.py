@@ -34,9 +34,9 @@
 # 
 # Configuration :
 # Change your IP and Port here :  
-URL_DOMOTICZ = 'http://192.168.0.5:8080/json.htm?type=command&param=updateuservariable&idx=PARAM_IDX&vname=PARAM_NAME&vtype=2&vvalue=PARAM_CMD'
-DOMOTICZ_USER='Bluez'
-DOMOTICZ_PASS='8891'
+URL_DOMOTICZ = 'http://Adresse_IP:8080/json.htm?type=command&param=updateuservariable&idx=PARAM_IDX&vname=PARAM_NAME&vtype=2&vvalue=PARAM_CMD'
+DOMOTICZ_USER='xxxxxxxx'
+DOMOTICZ_PASS='xxxxxxxxx'
 
 REPEAT_MODE=1
 SWITCH_MODE=0
@@ -51,8 +51,9 @@ SWITCH_MODE=0
 # mode : SWITCH_MODE = One update per status change / REPEAT_MODE = continuous updating the RSSI every 3 secondes
 
 TAG_DATA = [
-            ["Tag_Chris","c3:41:97:bc:cb:d1",30,0,13,REPEAT_MODE],
-            ["Tag_Julie","e7:76:9d:9b:32:00",30,0,14,REPEAT_MODE]
+            ["Tag_bleu","c3:41:97:bc:cb:d1",30,0,13,REPEAT_MODE],
+            ["Tag_Jaune","e7:76:9d:9b:32:00",30,0,14,REPEAT_MODE],
+			["Tag_Rouge","12:54:87:98:89:65",30,0,16,SWITCH_MODE]
            ]
 
            
